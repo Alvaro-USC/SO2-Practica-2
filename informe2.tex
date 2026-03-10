@@ -1,0 +1,376 @@
+% ============================================================
+%  Informe 2 Práctica 2 — SOII
+%  Compilar: lualatex informe2_practica2.tex  (dos pasadas)
+% ============================================================
+\documentclass[a4paper, 12pt]{article}
+
+% ── Codificación y fuentes ──────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% ── Idioma ──────────────────────────────────────────────────
+\usepackage[spanish, es-nolists, es-noindentfirst]{babel}
+
+% ── Geometría ───────────────────────────────────────────────
+\usepackage[
+  a4paper,
+  top=2.5cm, bottom=2.5cm,
+  left=2.8cm, right=2.8cm
+]{geometry}
+
+% ── Colores ─────────────────────────────────────────────────
+\usepackage{xcolor}
+\definecolor{azul}     {HTML}{2E5FA3}
+\definecolor{azulosc}  {HTML}{1A3A6B}
+\definecolor{grisclaro}{HTML}{F4F4F4}
+\definecolor{grisborde}{HTML}{CCCCCC}
+\definecolor{rojocod}  {HTML}{A31515}
+
+% ── Encabezados y pies ──────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{azul}\textbf{SOII --- Práctica 2}}
+\fancyhead[R]{\small\color{gray}Informe 2: Sincronización con semáforos}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Títulos de sección ──────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\color{azul}}
+  {\thesection.}{0.6em}{}
+  [\vspace{-0.3em}\textcolor{azul}{\rule{\linewidth}{0.8pt}}\vspace{0.2em}]
+
+\titleformat{\subsection}
+  {\large\bfseries\color{azulosc}}
+  {\thesubsection.}{0.5em}{}
+
+\titleformat{\subsubsection}
+  {\normalsize\bfseries}
+  {\thesubsubsection.}{0.4em}{}
+
+% ── Listas ──────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.5em, itemsep=2pt, topsep=4pt}
+
+% ── Tablas ──────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{colortbl}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% ── Código fuente ───────────────────────────────────────────
+\usepackage{listings}
+\lstdefinestyle{cstyle}{
+  language=C,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\bfseries\color{azul},
+  commentstyle=\itshape\color{gray},
+  stringstyle=\color{rojocod},
+  numberstyle=\tiny\color{gray},
+  numbers=left,
+  numbersep=8pt,
+  stepnumber=1,
+  backgroundcolor=\color{grisclaro},
+  frame=single,
+  framesep=4pt,
+  rulecolor=\color{grisborde},
+  breaklines=true,
+  tabsize=4,
+  showstringspaces=false,
+  xleftmargin=1.8em,
+  xrightmargin=0.5em,
+  captionpos=b,
+  literate=
+    {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+    {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+    {ñ}{{\~n}}1 {Ñ}{{\~N}}1,
+}
+\lstdefinestyle{shellstyle}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{grisclaro},
+  frame=single,
+  framesep=4pt,
+  rulecolor=\color{grisborde},
+  breaklines=true,
+  numbers=none,
+  xleftmargin=1em,
+  xrightmargin=0.5em,
+}
+\lstset{style=cstyle}
+
+% ── Cajas resaltadas ────────────────────────────────────────
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+
+\newtcolorbox{infobox}[1][]{
+  colback=azul!7, colframe=azul, fonttitle=\bfseries,
+  title=#1, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  breakable
+}
+\newtcolorbox{warnbox}[1][]{
+  colback=orange!8, colframe=orange!70!black, fonttitle=\bfseries,
+  title=#1, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  breakable
+}
+
+% ── Hiperenlaces ────────────────────────────────────────────
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true, linkcolor=azul, urlcolor=azul,
+  pdftitle={Práctica 2 SOII --- Informe 2},
+}
+
+% ── Miscelánea ──────────────────────────────────────────────
+\usepackage{microtype}
+\usepackage{parskip}
+\setlength{\parskip}{6pt}
+
+% ── Macro inline-code ───────────────────────────────────────
+\newcommand{\ic}[1]{\texttt{#1}}
+
+% ============================================================
+\begin{document}
+
+% ── Portada ─────────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{3cm}
+  {\Huge\bfseries\color{azul} Sistemas Operativos II\par}
+  \vspace{0.6cm}
+  {\LARGE Práctica 2 --- Informe 2\par}
+  \vspace{0.4cm}
+  {\large\color{gray} Sincronización de procesos con semáforos\par}
+  \vspace{0.5cm}
+  \textcolor{azul}{\rule{0.7\linewidth}{1.2pt}}
+  \vspace{2cm}
+
+  \begin{tabular}{rl}
+    \textbf{Asignatura:} & Sistemas Operativos II \\[4pt]
+    \textbf{Titulación:} & Grado en Ingeniería Informática \\[4pt]
+    \textbf{Curso:}      & 2024/25 \\[4pt]
+    \textbf{Fecha:}      & \today \\
+  \end{tabular}
+
+  \vfill
+  {\small Universidad de Santiago de Compostela}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% Para que la sección comience numerada como "2"
+\setcounter{section}{1}
+
+% ============================================================
+\section{Informe 2 --- Solución con semáforos POSIX}
+% ============================================================
+
+\subsection{Descripción de la solución}
+
+La solución clásica al problema del productor-consumidor utiliza tres
+semáforos POSIX que abordan las tres causas de error del apartado anterior:
+
+\vspace{0.5em}
+\begin{center}
+\begin{tabular}{L{2.4cm} C{2.2cm} L{8.5cm}}
+  \toprule
+  \rowcolor{azul!80}
+  \color{white}\textbf{Semáforo} &
+  \color{white}\textbf{Val.\ inicial} &
+  \color{white}\textbf{Propósito} \\
+  \midrule
+  \ic{VACIAS}  & \ic{N = 10} &
+    Número de huecos libres. El productor hace \ic{sem\_wait} antes
+    de insertar; se bloquea si el buffer está lleno. \\
+  \addlinespace
+  \ic{LLENAS}  & \ic{0} &
+    Número de elementos disponibles. El consumidor hace \ic{sem\_wait}
+    antes de retirar; se bloquea si el buffer está vacío. \\
+  \addlinespace
+  \ic{MUTEX}   & \ic{1} &
+    Exclusión mutua en la región crítica (acceso a \ic{buf} y
+    \ic{top}). \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Cómo ejecutar los programas}
+
+\begin{lstlisting}[style=shellstyle]
+gcc -o prod_sem prod_sem.c -pthread
+gcc -o cons_sem cons_sem.c -pthread
+
+# Terminal 1:
+./prod_sem
+# Terminal 2:
+./cons_sem
+\end{lstlisting}
+
+El productor crea e inicializa los semáforos con \ic{O\_CREAT}.
+El consumidor los abre con \ic{sem\_open("NOMBRE", 0)},
+reintentando hasta que el productor los haya creado.
+
+\subsection{Protocolo de sincronización}
+
+\subsubsection*{Productor}
+
+\begin{lstlisting}[style=cstyle,
+  caption={Esquema del bucle del productor (\texttt{prod\_sem.c})}]
+for (int iter = 0; iter < MAX_ITER; iter++) {
+    char item = produce_item();   // FUERA de la region critica
+
+    sem_wait(vacias);   // bloquear si buffer lleno
+    sem_wait(mutex);    // entrar en region critica
+    /* ====== REGION CRITICA ====== */
+    insert_item(item);
+    int val_top = shm->top; // capturar top dentro de la RC
+    /* ============================ */
+    sem_post(mutex);    // salir de region critica
+    sem_post(llenas);   // avisar al consumidor
+
+    sleep(fase_actual); // FUERA de la region critica
+}
+\end{lstlisting}
+
+\subsubsection*{Consumidor}
+
+\begin{lstlisting}[style=cstyle,
+  caption={Esquema del bucle del consumidor (\texttt{cons\_sem.c})}]
+for (int iter = 0; iter < MAX_ITER; iter++) {
+    sem_wait(llenas);   // bloquear si buffer vacio
+    sem_wait(mutex);    // entrar en region critica
+    /* ====== REGION CRITICA ====== */
+    char item = remove_item();
+    int val_top = shm->top; // capturar top dentro de la RC
+    /* ============================ */
+    sem_post(mutex);    // salir de region critica
+    sem_post(vacias);   // avisar al productor
+
+    consume_item(item); // FUERA de la region critica
+    sleep(fase_actual); // FUERA de la region critica
+}
+\end{lstlisting}
+
+\begin{infobox}[Orden crítico de las llamadas]
+  \ic{sem\_wait(condición)} debe preceder siempre a
+  \ic{sem\_wait(mutex)}.
+  Si se invirtiese el orden, un proceso podría retener el \ic{MUTEX}
+  mientras espera en el semáforo de condición, bloqueando al otro
+  proceso indefinidamente (\emph{interbloqueo}).
+\end{infobox}
+
+\subsection{Fases de velocidad}
+
+El bucle de 80 iteraciones tiene tres fases con \ic{sleep()} situados
+\textbf{fuera} de la región crítica:
+
+\vspace{0.5em}
+\begin{center}
+\begin{tabular}{C{2.2cm} C{2.2cm} C{2.2cm} L{5.5cm}}
+  \toprule
+  \rowcolor{azul!80}
+  \color{white}\textbf{Iteraciones} &
+  \color{white}\textbf{Prod.} &
+  \color{white}\textbf{Cons.} &
+  \color{white}\textbf{Efecto esperado} \\
+  \midrule
+  0 -- 29 & 0\,s & 2\,s &
+    Buffer lleno. Productor bloqueado en \ic{sem\_wait(vacias)}
+    cuando \ic{top = N}. \\
+  \addlinespace
+  30 -- 59 & 2\,s & 0\,s &
+    Buffer vacío. Consumidor bloqueado en \ic{sem\_wait(llenas)}
+    cuando \ic{top = 0}. \\
+  \addlinespace
+  60 -- 79 & rand 0--3\,s & rand 0--3\,s &
+    Comportamiento mixto; \ic{top} oscila entre 0 y~4. \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Resultados observados}
+
+La salida de \ic{prod\_sem} muestra \ic{top\_tras\_insert = 10}
+de forma sostenida durante las iteraciones 10--39, lo que confirma que el
+productor avanza sin esperar al consumidor (fase~1) y el buffer se mantiene
+lleno. En la fase~2 (iter 30--59) \ic{top\_tras\_insert} cae a~1,
+evidenciando que el consumidor vacía el buffer casi en tiempo real.
+En la fase aleatoria los valores de \ic{top} oscilan entre~1 y~4,
+reflejando el comportamiento no determinista de los tiempos aleatorios.
+
+El recuento final de vocales fue idéntico en productor y consumidor:
+
+\vspace{0.5em}
+\begin{center}
+\begin{tabular}{C{3cm} C{3cm} C{3cm}}
+  \toprule
+  \rowcolor{azul!80}
+  \color{white}\textbf{Vocal} &
+  \color{white}\textbf{Producidas} &
+  \color{white}\textbf{Consumidas} \\
+  \midrule
+  a\,/\,A & 8 & 8 \\
+  e\,/\,E & 6 & 6 \\
+  i\,/\,I & 8 & 8 \\
+  o\,/\,O & 5 & 5 \\
+  u\,/\,U & 3 & 3 \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Gestión de semáforos en el kernel}
+
+Los semáforos POSIX nombrados persisten en el kernel hasta que se eliminan
+explícitamente. Para evitar conflictos con ejecuciones anteriores, el
+productor llama a \ic{sem\_unlink()} \emph{antes} de crear los semáforos y
+de nuevo \emph{al terminar}:
+
+\begin{lstlisting}[style=cstyle]
+/* Al inicio: eliminar posibles residuos de ejecuciones previas */
+sem_unlink("VACIAS"); sem_unlink("LLENAS"); sem_unlink("MUTEX");
+
+/* Crear e inicializar */
+vacias = sem_open("VACIAS", O_CREAT, 0700, N);
+llenas = sem_open("LLENAS", O_CREAT, 0700, 0);
+mutex  = sem_open("MUTEX",  O_CREAT, 0700, 1);
+
+/* ... bucle productor ... */
+
+/* Al terminar: cerrar y eliminar del kernel */
+sem_close(vacias); sem_close(llenas); sem_close(mutex);
+sem_unlink("VACIAS"); sem_unlink("LLENAS"); sem_unlink("MUTEX");
+\end{lstlisting}
+
+El consumidor únicamente cierra sus descriptores con \ic{sem\_close()},
+sin eliminar los semáforos del kernel.
+
+\subsection{Conclusiones}
+
+\begin{itemize}
+  \item Los semáforos POSIX resuelven de forma correcta y eficiente las
+        tres causas de error del apartado anterior: \ic{MUTEX} garantiza
+        exclusión mutua; \ic{VACIAS} bloquea al productor sin
+        \emph{busy-waiting}; \ic{LLENAS} bloquea al consumidor sin
+        \emph{busy-waiting}.
+  \item El orden de llamadas \ic{sem\_wait(condición)} $\to$
+        \ic{sem\_wait(mutex)} es fundamental para evitar interbloqueos.
+        Invertirlo provocaría que un proceso retuviese el mutex mientras
+        espera en el semáforo de condición, bloqueando al otro proceso
+        indefinidamente.
+  \item Las fases de velocidad demuestran visualmente que los semáforos
+        de condición actúan como señales \emph{sleep}/\emph{wakeup}: el
+        proceso lento queda suspendido sin consumir CPU hasta que el otro
+        proceso libera un hueco o deposita un elemento.
+  \item La coincidencia exacta de los conteos de vocales en todas las
+        ejecuciones es la prueba objetiva de que no se ha perdido ni
+        duplicado ningún carácter, independientemente de los
+        \emph{timings} aleatorios de la fase~3.
+  \item La función \ic{sem\_unlink()} es imprescindible para una
+        correcta limpieza de recursos del kernel; su omisión deja
+        semáforos residuales que interfieren con ejecuciones posteriores.
+\end{itemize}
+
+\end{document}

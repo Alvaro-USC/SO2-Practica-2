@@ -1,0 +1,312 @@
+% ============================================================
+%  Informe 1 Práctica 2 — SOII
+%  Compilar: lualatex informe1_practica2.tex  (dos pasadas)
+% ============================================================
+\documentclass[a4paper, 12pt]{article}
+
+% ── Codificación y fuentes ──────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% ── Idioma ──────────────────────────────────────────────────
+\usepackage[spanish, es-nolists, es-noindentfirst]{babel}
+
+% ── Geometría ───────────────────────────────────────────────
+\usepackage[
+  a4paper,
+  top=2.5cm, bottom=2.5cm,
+  left=2.8cm, right=2.8cm
+]{geometry}
+
+% ── Colores ─────────────────────────────────────────────────
+\usepackage{xcolor}
+\definecolor{azul}     {HTML}{2E5FA3}
+\definecolor{azulosc}  {HTML}{1A3A6B}
+\definecolor{grisclaro}{HTML}{F4F4F4}
+\definecolor{grisborde}{HTML}{CCCCCC}
+\definecolor{rojocod}  {HTML}{A31515}
+
+% ── Encabezados y pies ──────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{azul}\textbf{SOII --- Práctica 2}}
+\fancyhead[R]{\small\color{gray}Informe 1: Carreras críticas}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Títulos de sección ──────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\color{azul}}
+  {\thesection.}{0.6em}{}
+  [\vspace{-0.3em}\textcolor{azul}{\rule{\linewidth}{0.8pt}}\vspace{0.2em}]
+
+\titleformat{\subsection}
+  {\large\bfseries\color{azulosc}}
+  {\thesubsection.}{0.5em}{}
+
+\titleformat{\subsubsection}
+  {\normalsize\bfseries}
+  {\thesubsubsection.}{0.4em}{}
+
+% ── Listas ──────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.5em, itemsep=2pt, topsep=4pt}
+
+% ── Tablas ──────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{colortbl}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% ── Código fuente ───────────────────────────────────────────
+\usepackage{listings}
+\lstdefinestyle{cstyle}{
+  language=C,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\bfseries\color{azul},
+  commentstyle=\itshape\color{gray},
+  stringstyle=\color{rojocod},
+  numberstyle=\tiny\color{gray},
+  numbers=left,
+  numbersep=8pt,
+  stepnumber=1,
+  backgroundcolor=\color{grisclaro},
+  frame=single,
+  framesep=4pt,
+  rulecolor=\color{grisborde},
+  breaklines=true,
+  tabsize=4,
+  showstringspaces=false,
+  xleftmargin=1.8em,
+  xrightmargin=0.5em,
+  captionpos=b,
+  literate=
+    {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+    {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+    {ñ}{{\~n}}1 {Ñ}{{\~N}}1,
+}
+\lstdefinestyle{shellstyle}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{grisclaro},
+  frame=single,
+  framesep=4pt,
+  rulecolor=\color{grisborde},
+  breaklines=true,
+  numbers=none,
+  xleftmargin=1em,
+  xrightmargin=0.5em,
+}
+\lstset{style=cstyle}
+
+% ── Cajas resaltadas ────────────────────────────────────────
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+
+\newtcolorbox{infobox}[1][]{
+  colback=azul!7, colframe=azul, fonttitle=\bfseries,
+  title=#1, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  breakable
+}
+\newtcolorbox{warnbox}[1][]{
+  colback=orange!8, colframe=orange!70!black, fonttitle=\bfseries,
+  title=#1, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  breakable
+}
+
+% ── Hiperenlaces ────────────────────────────────────────────
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true, linkcolor=azul, urlcolor=azul,
+  pdftitle={Práctica 2 SOII --- Informe 1},
+}
+
+% ── Miscelánea ──────────────────────────────────────────────
+\usepackage{microtype}
+\usepackage{parskip}
+\setlength{\parskip}{6pt}
+
+% ── Macro inline-code ───────────────────────────────────────
+\newcommand{\ic}[1]{\texttt{#1}}
+
+% ============================================================
+\begin{document}
+
+% ── Portada ─────────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{3cm}
+  {\Huge\bfseries\color{azul} Sistemas Operativos II\par}
+  \vspace{0.6cm}
+  {\LARGE Práctica 2 --- Informe 1\par}
+  \vspace{0.4cm}
+  {\large\color{gray} Carreras críticas en el productor-consumidor\par}
+  \vspace{0.5cm}
+  \textcolor{azul}{\rule{0.7\linewidth}{1.2pt}}
+  \vspace{2cm}
+
+  \begin{tabular}{rl}
+    \textbf{Asignatura:} & Sistemas Operativos II \\[4pt]
+    \textbf{Titulación:} & Grado en Ingeniería Informática \\[4pt]
+    \textbf{Curso:}      & 2024/25 \\[4pt]
+    \textbf{Fecha:}      & \today \\
+  \end{tabular}
+
+  \vfill
+  {\small Universidad de Santiago de Compostela}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{Informe 1 --- Carreras críticas en el productor-consumidor}
+% ============================================================
+
+\subsection{Descripción del problema}
+
+El problema del productor-consumidor es un problema clásico de concurrencia
+en el que dos procesos comparten un buffer de tamaño fijo (\ic{N~=~10}).
+El productor escribe caracteres en el buffer y el consumidor los retira.
+Cuando no existe ningún mecanismo de sincronización, ambos procesos pueden
+acceder simultáneamente a las variables compartidas \ic{count} y \ic{top},
+produciendo \emph{carreras críticas}.
+
+\subsection{Cómo ejecutar los programas}
+
+\subsubsection*{Compilación}
+\begin{lstlisting}[style=shellstyle]
+gcc -o prod prod.c
+gcc -o cons cons.c
+\end{lstlisting}
+
+\subsubsection*{Ejecución (dos terminales distintas)}
+\begin{lstlisting}[style=shellstyle]
+# Terminal 1:
+./prod
+# Terminal 2 (arrancar poco despues del productor):
+./cons
+\end{lstlisting}
+
+El fichero de texto \ic{input.txt} debe encontrarse en el mismo directorio
+de trabajo. El productor debe arrancarse primero para que cree el fichero de
+memoria compartida \ic{/tmp/shm\_buf}.
+
+\subsection{Diseño y funcionamiento}
+
+\subsubsection*{Memoria compartida}
+
+La memoria compartida se implementa mediante \ic{mmap()} sobre el fichero
+\ic{/tmp/shm\_buf}. La estructura compartida contiene:
+
+\begin{itemize}
+  \item \ic{buf[N]}: buffer de tipo \ic{char} que funciona como pila LIFO.
+  \item \ic{top}: índice de la cima de la pila (\ic{top = 0} significa pila
+        vacía).
+  \item \ic{count}: número de elementos actualmente en el buffer.
+\end{itemize}
+
+\subsubsection*{Funciones principales}
+
+\begin{itemize}
+  \item \ic{produce\_item()}: lee un carácter del fichero \ic{input.txt}
+        e incrementa el contador de la vocal correspondiente.
+  \item \ic{insert\_item(item)}: inserta \ic{item} en \ic{buf[top]} y
+        actualiza \ic{top} y \ic{count}. \textbf{Región crítica.}
+  \item \ic{remove\_item()}: decrementa \ic{top}, lee el carácter de la
+        cima, deja un guión \ic{'-'} en su lugar y decrementa \ic{count}.
+        \textbf{Región crítica.}
+  \item \ic{consume\_item(item)}: contabiliza las vocales del carácter
+        retirado.
+\end{itemize}
+
+\subsubsection*{Espera activa}
+
+Al no disponer de semáforos, la sincronización se realiza mediante
+\emph{busy-waiting}: el productor comprueba \ic{count == N} en un bucle
+y el consumidor comprueba \ic{count == 0}, durmiendo un segundo en cada
+iteración de espera.
+
+\subsection{Región crítica y cómo provocar carreras}
+
+La región crítica comprende el acceso combinado a \ic{count} y \ic{top}.
+El código incluye líneas \ic{sleep()} comentadas marcadas con
+\ic{[SLEEP-RC]} que permiten ampliar artificialmente la duración de dicha
+región:
+
+\begin{lstlisting}[style=cstyle,
+  caption={Fragmento de \texttt{insert\_item()} en \texttt{prod.c}}]
+void insert_item(char item)
+{
+    /* ... espera activa si buffer lleno ... */
+
+    /* sleep(SLEEP_RC); */  /* [SLEEP-RC] amplifica la carrera */
+
+    shm->buf[shm->top] = item;
+    shm->top++;
+    shm->count++;
+}
+\end{lstlisting}
+
+\begin{warnbox}[Cómo activar las carreras críticas]
+  Modificar la constante \texttt{SLEEP\_RC} en \texttt{prod.c} y \texttt{cons.c}.
+  Al introducir un \texttt{sleep()} dentro de la región crítica, un proceso se 
+  congela antes de terminar de actualizar \texttt{top} y \texttt{count}, permitiendo 
+  al otro proceso entrar y operar sobre datos desfasados.
+\end{warnbox}
+
+\subsection{Resultados observados y patrones de carrera}
+
+Al modificar los valores de retardo dentro de la región crítica (\ic{SLEEP\_RC}), se observaron patrones de carrera muy específicos, fuertemente condicionados por las velocidades relativas de los procesos, el límite del buffer (\ic{N=10}) y el número total de iteraciones (\ic{MAX\_ITER=80}):
+
+\begin{itemize}
+  \item \textbf{Productor lento (\ic{sleep=1}) y Consumidor rápido (\ic{sleep=0}):}\\
+        Se observan carreras críticas de forma constante. El productor pasa un segundo entero ``congelado'' a mitad de su actualización de variables, lo que deja una ventana de vulnerabilidad enorme. El consumidor, al no tener retardo, entra repetidas veces a la región crítica y colisiona continuamente con la operación incompleta del productor.
+        
+  \item \textbf{Consumidor lento (\ic{sleep=1}) y Productor rápido (\ic{sleep=0}):}\\
+        Las carreras se presentan de forma asimétrica. El productor \textbf{no} sufre carreras en sus primeras 10 iteraciones porque el buffer inicial está vacío y las inserta rápidamente antes de que el consumidor despierte de su primer letargo. Inversamente, el consumidor \textbf{no} sufre carreras en sus últimas 10 iteraciones porque el productor ya ha terminado sus 80 ciclos totales y abandonado la memoria compartida, dejando al consumidor operando en solitario.
+        
+  \item \textbf{Ambos rápidos (\ic{sleep=0} en los dos):}\\
+        Las carreras críticas ocurren casi exclusivamente en las iteraciones múltiples de 10. Al ejecutarse sin retardos artificiales, los procesos colisionan cuando alcanzan los límites físicos del buffer (0 o 10 elementos). Estos topes obligan a un proceso a entrar en \emph{busy-waiting} frente a la región crítica. En el momento exacto en que el otro proceso altera el contador, ambos se abalanzan sobre la memoria compartida simultáneamente, garantizando la colisión exactamente cada 10 iteraciones.
+\end{itemize}
+
+El recuento final de vocales (cuando el código se lograba ejecutar sin corrupción fatal) fue idéntico en ambos procesos:
+
+\vspace{0.5em}
+\begin{center}
+\begin{tabular}{C{3cm} C{3cm} C{3cm}}
+  \toprule
+  \rowcolor{azul!80}
+  \color{white}\textbf{Vocal} &
+  \color{white}\textbf{Producidas} &
+  \color{white}\textbf{Consumidas} \\
+  \midrule
+  a\,/\,A & 8 & 8 \\
+  e\,/\,E & 6 & 6 \\
+  i\,/\,I & 8 & 8 \\
+  o\,/\,O & 5 & 5 \\
+  u\,/\,U & 3 & 3 \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Conclusiones}
+
+\begin{itemize}
+  \item Sin sincronización, las carreras críticas son posibles siempre
+        que la región crítica no sea atómica desde el punto de vista del
+        planificador del sistema operativo.
+  \item Los límites físicos del buffer actúan como cuellos de botella que fuerzan la sincronización temporal de los procesos, multiplicando la probabilidad de colisiones sistemáticas.
+  \item El valor de \ic{count} puede superar \ic{N} o hacerse negativo
+        si ambos procesos lo modifican concurrentemente.
+  \item El índice \ic{top} puede apuntar a una posición errónea,
+        provocando sobreescritura o lectura de datos corruptos en el
+        buffer.
+  \item La espera activa (\emph{busy-waiting}) desperdicia CPU y no
+        garantiza exclusión mutua: es una solución incorrecta e
+        ineficiente.
+\end{itemize}
+
+\end{document}
