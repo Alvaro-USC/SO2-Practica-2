@@ -1,0 +1,303 @@
+% ============================================================
+%  Informe Ejercicios Opcionales Práctica 2 — SOII
+%  Compilar: lualatex informe_opcionales.tex  (dos pasadas)
+% ============================================================
+\documentclass[a4paper, 12pt]{article}
+
+% ── Codificación y fuentes ──────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% ── Idioma ──────────────────────────────────────────────────
+\usepackage[spanish, es-nolists, es-noindentfirst]{babel}
+
+% ── Geometría ───────────────────────────────────────────────
+\usepackage[
+  a4paper,
+  top=2.5cm, bottom=2.5cm,
+  left=2.8cm, right=2.8cm
+]{geometry}
+
+% ── Colores ─────────────────────────────────────────────────
+\usepackage{xcolor}
+\definecolor{azul}     {HTML}{2E5FA3}
+\definecolor{azulosc}  {HTML}{1A3A6B}
+\definecolor{grisclaro}{HTML}{F4F4F4}
+\definecolor{grisborde}{HTML}{CCCCCC}
+\definecolor{rojocod}  {HTML}{A31515}
+
+% ── Encabezados y pies ──────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{azul}\textbf{SOII --- Práctica 2}}
+\fancyhead[R]{\small\color{gray}Ejercicios Opcionales (Hilos)}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Títulos de sección ──────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\color{azul}}
+  {\thesection.}{0.6em}{}
+  [\vspace{-0.3em}\textcolor{azul}{\rule{\linewidth}{0.8pt}}\vspace{0.2em}]
+
+\titleformat{\subsection}
+  {\large\bfseries\color{azulosc}}
+  {\thesubsection.}{0.5em}{}
+
+\titleformat{\subsubsection}
+  {\normalsize\bfseries}
+  {\thesubsubsection.}{0.4em}{}
+
+% ── Listas ──────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.5em, itemsep=2pt, topsep=4pt}
+
+% ── Tablas ──────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{colortbl}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% ── Código fuente ───────────────────────────────────────────
+\usepackage{listings}
+\lstdefinestyle{cstyle}{
+  language=C,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\bfseries\color{azul},
+  commentstyle=\itshape\color{gray},
+  stringstyle=\color{rojocod},
+  numberstyle=\tiny\color{gray},
+  numbers=left,
+  numbersep=8pt,
+  stepnumber=1,
+  backgroundcolor=\color{grisclaro},
+  frame=single,
+  framesep=4pt,
+  rulecolor=\color{grisborde},
+  breaklines=true,
+  tabsize=4,
+  showstringspaces=false,
+  xleftmargin=1.8em,
+  xrightmargin=0.5em,
+  captionpos=b,
+  literate=
+    {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+    {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+    {ñ}{{\~n}}1 {Ñ}{{\~N}}1,
+}
+\lstdefinestyle{shellstyle}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{grisclaro},
+  frame=single,
+  framesep=4pt,
+  rulecolor=\color{grisborde},
+  breaklines=true,
+  numbers=none,
+  xleftmargin=1em,
+  xrightmargin=0.5em,
+  literate={→}{{$\rightarrow$}}1 {}{{\~n}}1,
+}
+\lstset{style=cstyle}
+
+% ── Cajas resaltadas ────────────────────────────────────────
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+
+\newtcolorbox{infobox}[1][]{
+  colback=azul!7, colframe=azul, fonttitle=\bfseries,
+  title=#1, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  breakable
+}
+\newtcolorbox{warnbox}[1][]{
+  colback=orange!8, colframe=orange!70!black, fonttitle=\bfseries,
+  title=#1, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  breakable
+}
+
+% ── Hiperenlaces ────────────────────────────────────────────
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true, linkcolor=azul, urlcolor=azul,
+  pdftitle={Práctica 2 SOII --- Ejercicios Opcionales},
+}
+
+% ── Miscelánea ──────────────────────────────────────────────
+\usepackage{microtype}
+\usepackage{parskip}
+\setlength{\parskip}{6pt}
+
+% ── Macro inline-code ───────────────────────────────────────
+\newcommand{\ic}[1]{\texttt{#1}}
+
+% ============================================================
+\begin{document}
+
+% ── Portada ─────────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{3cm}
+  {\Huge\bfseries\color{azul} Sistemas Operativos II\par}
+  \vspace{0.6cm}
+  {\LARGE Práctica 2 --- Informe Opcionales\par}
+  \vspace{0.4cm}
+  {\large\color{gray} Sincronización avanzada con hilos POSIX (pthreads)\par}
+  \vspace{0.5cm}
+  \textcolor{azul}{\rule{0.7\linewidth}{1.2pt}}
+  \vspace{2cm}
+
+  \begin{tabular}{rl}
+    \textbf{Asignatura:} & Sistemas Operativos II \\[4pt]
+    \textbf{Titulación:} & Grado en Ingeniería Informática \\[4pt]
+    \textbf{Curso:}      & 2024/25 \\[4pt]
+    \textbf{Fecha:}      & \today \\
+  \end{tabular}
+
+  \vfill
+  {\small Universidad de Santiago de Compostela}
+\end{titlepage}
+
+% ── Índice en la segunda página ─────────────────────────────
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{Ejercicio Opcional 1: Productor-Consumidor con Hilos}
+% ============================================================
+
+\subsection{Descripción arquitectónica}
+
+A diferencia de los apartados obligatorios donde se utilizaban procesos pesados comunicados mediante \ic{mmap()}, en esta versión (\ic{opc1\_threads.c}) se instancian dos hilos dentro de un único proceso utilizando la biblioteca POSIX Threads (\ic{pthread}).
+
+La memoria es compartida de forma natural ya que todos los hilos residen en el mismo espacio de direcciones virtuales. Esto elimina la necesidad de utilizar ficheros mapeados en memoria.
+
+\begin{infobox}[Semáforos sin nombre (\texttt{sem\_init})]
+  En lugar de crear semáforos nombrados en el sistema de archivos del kernel mediante \ic{sem\_open()}, se utilizan semáforos anónimos basados en memoria mediante \ic{sem\_init(\&sem, 0, valor)}. El segundo argumento a \ic{0} indica que el semáforo será compartido exclusivamente entre los hilos del proceso actual, evitando dejar recursos huérfanos en el sistema.
+\end{infobox}
+
+\subsection{Análisis de resultados}
+
+La ejecución evidencia tres fases temporales claramente delimitadas por los \ic{sleep()} situados en el código:
+\begin{enumerate}
+    \item \textbf{Productor más rápido:} El buffer se llena rápidamente hasta su capacidad máxima (\ic{top=10}).
+    \item \textbf{Consumidor más rápido:} El consumidor agota los recursos del buffer llegando a \ic{top=0}.
+    \item \textbf{Fase aleatoria:} Ambos procesos se bloquean alternativamente.
+\end{enumerate}
+
+La salida final corrobora el correcto uso del semáforo mutex para la sección crítica:
+
+\begin{lstlisting}[style=shellstyle]
+[MAIN] === Vocales producidas ===
+  a/A=8  e/E=6  i/I=8  o/O=5  u/U=3
+[MAIN] === Vocales consumidas ===
+  a/A=8  e/E=6  i/I=8  o/O=5  u/U=3
+[MAIN] OK: vocales producidas == vocales consumidas.
+\end{lstlisting}
+
+\newpage
+
+% ============================================================
+\section{Ejercicio Opcional 2: $N$ Productores y $M$ Consumidores}
+% ============================================================
+
+
+
+\subsection{Diseño y control de concurrencia}
+
+La generalización del problema a múltiples productores y consumidores (\ic{opc2\_multi.c}) introduce complicaciones de sincronización adicionales. Además de proteger el buffer, es necesario proteger otros recursos compartidos:
+
+\begin{itemize}
+    \item \textbf{\ic{mutex\_prod}:} Protege el acceso al puntero de lectura del fichero \ic{input.txt} compartido entre los $N$ productores.
+    \item \textbf{\ic{mutex\_fin}:} (Junto con variables \ic{atomic\_int}) Protege los contadores globales de elementos producidos y consumidos para gestionar la terminación.
+    \item \textbf{\ic{mutex\_vocales\_[prod|cons]}:} Evita condiciones de carrera al actualizar los contadores estadísticos de vocales.
+\end{itemize}
+
+\subsection{Protocolo de Terminación en Redes M:N}
+
+El problema clásico en redes de varios productores y consumidores es evitar que los consumidores queden bloqueados en un \ic{sem\_wait(\&llenas)} infinito una vez que los productores han terminado.
+
+La solución implementada utiliza una combinación de variables atómicas y \emph{broadcasting} mediante semáforos:
+\begin{enumerate}
+    \item El hilo principal (\ic{main}) espera mediante \ic{pthread\_join()} a que todos los productores terminen.
+    \item Se activa el flag atómico \ic{produccion\_fin}.
+    \item El hilo principal ejecuta \ic{sem\_post(\&llenas)} $M$ veces (una por cada consumidor).
+    \item Los consumidores atrapados en espera se despiertan, evalúan la condición de finalización y propagan la señal si es necesario antes de hacer \ic{break}.
+\end{enumerate}
+
+\subsection{Análisis de resultados}
+
+La ejecución solicitada de 3 productores y 2 consumidores reporta una sincronización perfecta para 120 elementos en total (40 elementos por productor):
+
+\begin{lstlisting}[style=shellstyle]
+[MAIN] 3 productor(es), 2 consumidor(es)
+[MAIN] Total a producir/consumir: 120 items
+...
+[PROD-0] i=39  producido='c'
+[PROD-0] i=39  insertado  top=5  producidos_total=120
+[CONS-0] retirado='c'  top=4  consumidos_total=116
+...
+[MAIN] === Resumen ===
+[MAIN] Producidos : 120
+[MAIN] Consumidos : 120
+[MAIN] Vocales producidas: a=12 e=12 i=8 o=8 u=4
+[MAIN] Vocales consumidas: a=12 e=12 i=8 o=8 u=4
+[MAIN] OK: producidos == consumidos, vocales coinciden.
+\end{lstlisting}
+
+\newpage
+
+% ============================================================
+\section{Ejercicio Opcional 3: Arquitectura en Pipeline}
+% ============================================================
+
+
+
+\subsection{Descripción del Pipeline Lineal}
+
+El archivo \ic{opc3\_pipeline.c} implementa un flujo de datos secuencial a través de $P$ hilos, conectados por $P-1$ buffers intermedios de tamaño fijo. 
+Cada hilo intermedio actúa simultáneamente como \textbf{consumidor} de la etapa anterior y como \textbf{productor} de la etapa siguiente. 
+
+La topología permite el \textbf{máximo grado de concurrencia}: al disponer de arrays independientes de semáforos (\ic{g\_vacias[k]}, \ic{g\_llenas[k]}, \ic{g\_mutex[k]}), el hilo 1 puede estar escribiendo en el buffer 1 al mismo tiempo que el hilo 2 escribe en el buffer 2. No existe un \emph{Global Interpreter Lock} ni bloqueo general del sistema.
+
+\subsection{Transformación de datos (\texttt{next\_alpha})}
+
+Para evidenciar el flujo a través de las etapas intermedias, cada hilo aplica una función de cifrado de rotación unitaria cíclica (tipo César $+1$) exclusivamente a los caracteres alfabéticos.
+
+\subsection{Propagación en cascada y resultados}
+
+Para terminar la ejecución, el Productor Origen (Hilo 0) inserta un carácter centinela nulo (\ic{'\textbackslash 0'}) que cada hilo intermedio detecta y propaga a la etapa adyacente antes de terminar su propia ejecución.
+
+Se muestra un pipeline configurado con $P=4$ etapas (2 etapas intermedias de transformación):
+
+\begin{lstlisting}[style=shellstyle]
+[MAIN] Pipeline de 4 etapas, 3 buffer(es) intermedios.
+[MAIN] Cada caracter pasa por 2 transformacion(es) next_alpha.
+[MAIN] 80 items a producir.
+...
+[Hilo  0] i= 0  leido='E'
+[Hilo  0->buf 0] insertado='E'  top=1
+[buf 0->Hilo  1] retirado='E'  top=0
+[Hilo  1] 'E' -> 'F'
+[Hilo  1->buf 1] insertado='F'  top=1
+[buf 1->Hilo  2] retirado='F'  top=0
+[Hilo  2] 'F' -> 'G'
+[Hilo  2->buf 2] insertado='G'  top=1
+[buf 2->Hilo  3] retirado='G'  top=0
+[Hilo  3] consumido='G'
+...
+[MAIN] === Resumen del pipeline ===
+[MAIN] Transformaciones aplicadas: 2 (next_alpha x2)
+[MAIN] Vocales en origen  (hilo 0):   a=8 e=6 i=8 o=5 u=3
+[MAIN] Vocales al final   (hilo 3):  a=1 e=3 i=2 o=2 u=0
+[MAIN] (Las vocales pueden cambiar tras transformaciones: correcto)
+[MAIN] Vocales totales origen=30, finales=8
+[MAIN] OK: se procesaron exactamente 80 caracteres.
+\end{lstlisting}
+
+\begin{warnbox}[Discrepancia de Vocales]
+  A diferencia de los ejercicios anteriores, el conteo de vocales inicial y final no coincide. Esto es estrictamente correcto y esperado, ya que las transformaciones intermedias (ej. $e \rightarrow f \rightarrow g$) convierten vocales en consonantes y viceversa. La validación de integridad recae en que los caracteres iniciales y procesados totales son exactamente 80.
+\end{warnbox}
+
+\end{document}
